@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 // Importamos los componentes
 import Header from "./Components/Header";
@@ -9,18 +9,24 @@ function App() {
     // state principal
     const [ciudad, setCiudad] = useState("");
     const [pais, setPais] = useState("");
-    const [error, setError ] = useState(false);
+    const [error, setError] = useState(false);
+    const [resultado, setResultado] = useState({});
+
+    useEffect(() => {
+        // prevenir ejecucion
+        if (ciudad === "") return;
+        consultarAPI();
+    }, [ciudad, pais]);
 
     // Funcion que pasa los datos de la consulta desde el formulario
 
     const datosConsulta = datos => {
         // validad que ambos campos llegen
-        if(datos.ciudad === '' || datos.pais === ''){
-          
-          setError(true);
+        if (datos.ciudad === "" || datos.pais === "") {
+            setError(true);
 
-          // un error
-          return;
+            // un error
+            return;
         }
 
         // Ciudad y pais existen, agregarlos al state
@@ -32,14 +38,29 @@ function App() {
     // cargar un componente condicionalmente
     let componente;
 
-    if(error){
-      // si hay error lo muestra
-      componente = <Error mensaje='Ambos campos son obligatorios' />
-
-    }else{
-      // mostrar clima
-      componente = null;
+    if (error) {
+        // si hay error lo muestra
+        componente = <Error mensaje="Ambos campos son obligatorios" />;
+    } else {
+        // mostrar clima
+        componente = null;
     }
+
+    const consultarAPI = async () => {
+        const appID = "fa13bf0bb17417bb7cc0a8e5128b69ef";
+        const lang = 'es'
+
+        const url = `http://api.openweathermap.org/data/2.5/weather?q=${ciudad},${pais}&appid=${appID}&lang=${lang}&units=metric`;
+
+        // consultar la url con fetch
+
+        const respuesta = await fetch(url);
+
+        const resultado = await respuesta.json();
+
+        // Seteamos el resultado en el useState
+        setResultado(resultado);
+    };
 
     return (
         <div className="App">
@@ -51,9 +72,7 @@ function App() {
                             <Formulario datosConsulta={datosConsulta} />
                         </div>
 
-                        <div className="col s12 m6">
-                            {componente}
-                        </div>
+                        <div className="col s12 m6">{componente}</div>
                     </div>
                 </div>
             </div>
