@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import Header from "./Components/Header";
 import Formulario from "./Components/Formulario";
 import Error from "./Components/Error";
+import Clima from "./Components/Clima";
 
 function App() {
     // state principal
@@ -16,6 +17,7 @@ function App() {
         // prevenir ejecucion
         if (ciudad === "") return;
         consultarAPI();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ciudad, pais]);
 
     // Funcion que pasa los datos de la consulta desde el formulario
@@ -41,14 +43,17 @@ function App() {
     if (error) {
         // si hay error lo muestra
         componente = <Error mensaje="Ambos campos son obligatorios" />;
+    } else if (resultado.cod === "404") {
+        // si hay error lo muestra si no encuentra la ciudad
+        componente = <Error mensaje={resultado.message} />;
     } else {
         // mostrar clima
-        componente = null;
+        componente = <Clima resultado={resultado} />;
     }
 
     const consultarAPI = async () => {
         const appID = "fa13bf0bb17417bb7cc0a8e5128b69ef";
-        const lang = 'es'
+        const lang = "es";
 
         const url = `http://api.openweathermap.org/data/2.5/weather?q=${ciudad},${pais}&appid=${appID}&lang=${lang}&units=metric`;
 
@@ -71,7 +76,6 @@ function App() {
                         <div className="col s12 m6">
                             <Formulario datosConsulta={datosConsulta} />
                         </div>
-
                         <div className="col s12 m6">{componente}</div>
                     </div>
                 </div>

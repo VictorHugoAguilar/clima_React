@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-function Formulario({datosConsulta}) {
+function Formulario({ datosConsulta }) {
     // state del componente
     // busqueda == al State
     // guardar busqueda == this.setState({})
@@ -22,7 +22,7 @@ function Formulario({datosConsulta}) {
 
         // pasar hacia el componente principal desde el formulario
         datosConsulta(busqueda);
-    }
+    };
 
     return (
         <form onSubmit={consultarClima}>
